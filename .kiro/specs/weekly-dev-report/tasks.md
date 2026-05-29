@@ -31,13 +31,13 @@
   - [x] 2.2 创建默认配置模板 `templates/weekly-summary.toml`
     - 模板含仓库列表、`output_dir`、`author`、`export_enabled`、`push_target` 与 `[llm]`/`[feishu]` 段；`llm.enabled` 默认 `false`
     - _Requirements: 1.6, 8.2_
-  - [ ]* 2.3 为配置解析编写属性测试
+  - [x] 2.3 为配置解析编写属性测试
     - **Property 1: 配置解析正确性**（Hypothesis）
     - **Validates: Requirements 1.2**
-  - [ ]* 2.4 为 LLM 配置持久性编写属性测试
+  - [x] 2.4 为 LLM 配置持久性编写属性测试
     - **Property 15: LLM 配置持久性**（Hypothesis）——重复加载/读取后 `llm.enabled` 不被重置或修改
     - **Validates: Requirements 8.3**
-  - [ ]* 2.5 编写配置加载单元测试
+  - [x] 2.5 编写配置加载单元测试
     - 默认路径选择（1.1）、`output_dir` 使用（1.5）、非法 TOML 报错含行号/键名（1.4）、默认模板 LLM 关闭（1.6/8.2）
     - _Requirements: 1.1, 1.4, 1.5, 1.6, 8.2_
 
@@ -47,13 +47,13 @@
     - `week_window_for(year, iso_week)`：周一 00:00:00 ~ 周日 23:59:59（本地时区）
     - `report_identifier(d)`：依据 ISO 8601 `isocalendar()` 产出 `YYYY-Www`（周序号两位补零），正确处理跨年周
     - _Requirements: 4.1, 4.2, 4.3_
-  - [ ]* 3.2 为默认时间窗编写属性测试
+  - [x] 3.2 为默认时间窗编写属性测试
     - **Property 7: 默认 Week_Window 计算**（Hypothesis）
     - **Validates: Requirements 4.1**
-  - [ ]* 3.3 为指定周时间窗编写属性测试
+  - [x] 3.3 为指定周时间窗编写属性测试
     - **Property 8: 指定周 Week_Window 计算**（Hypothesis）
     - **Validates: Requirements 4.2**
-  - [ ]* 3.4 为周报标识编写属性测试
+  - [x] 3.4 为周报标识编写属性测试
     - **Property 9: Report_Identifier 的 ISO 计算**（Hypothesis）
     - **Validates: Requirements 4.3**
 
@@ -62,13 +62,13 @@
     - 对每个仓库执行时间窗内 `git -C <repo> log --since --until --pretty=format:%H%x1f%ad%x1f%s --date=short`，解析为 `Commit`（保留 `repo_id`/`date`/`subject`）
     - 支持 `--author` 作者过滤；非 git 路径捕获错误并产出标识该路径的 `Warning` 后继续；窗内无提交返回空 `commits`
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
-  - [ ]* 4.2 为 Git 采集时间窗与字段保留编写属性测试
+  - [x] 4.2 为 Git 采集时间窗与字段保留编写属性测试
     - **Property 2: Git 采集落在时间窗内且保留字段**（Hypothesis）
     - **Validates: Requirements 2.1, 2.2**
-  - [ ]* 4.3 为作者过滤编写属性测试
+  - [x] 4.3 为作者过滤编写属性测试
     - **Property 3: Git 作者过滤**（Hypothesis）
     - **Validates: Requirements 2.4**
-  - [ ]* 4.4 编写 Git_Collector 单元测试
+  - [x] 4.4 编写 Git_Collector 单元测试
     - 非 git 路径告警并继续（2.3）、窗内空提交返回空集合（2.5）
     - _Requirements: 2.3, 2.5_
 
@@ -79,16 +79,16 @@
     - 实现 `is_injected(text)`：`lstrip()` 后以 `INJECTED_TAGS`（`<environment_context>` 等）前缀开头则排除，不计入 `user_prompts` 与 `prompt_count`
     - 单文件解析失败跳过 + 告警 + 继续；`~/.codex/sessions/` 不存在返回空集合 + 信息
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
-  - [ ]* 5.2 为 Codex 会话解析正确性编写属性测试
+  - [x] 5.2 为 Codex 会话解析正确性编写属性测试
     - **Property 4: Codex 会话解析正确性**（Hypothesis）
     - **Validates: Requirements 3.2, 3.3, 3.7**
-  - [ ]* 5.3 为注入上下文消息排除编写属性测试
+  - [x] 5.3 为注入上下文消息排除编写属性测试
     - **Property 5: 注入上下文消息被排除（关键）**（Hypothesis）
     - **Validates: Requirements 3.4**
-  - [ ]* 5.4 为会话文件发现与时间过滤编写属性测试
+  - [x] 5.4 为会话文件发现与时间过滤编写属性测试
     - **Property 6: Codex 会话文件发现与时间过滤**（Hypothesis）
     - **Validates: Requirements 3.1**
-  - [ ]* 5.5 用真实 Codex JSONL fixtures 编写单元测试
+  - [x] 5.5 用真实 Codex JSONL fixtures 编写单元测试
     - 真实样例验证解析与注入排除（含 `<environment_context>` 等包裹消息）、损坏文件跳过（3.5）、目录缺失（3.6）
     - _Requirements: 3.4, 3.5, 3.6_
 
@@ -101,10 +101,10 @@
     - 项目归属：git 提交按仓库 `path` 入桶；Codex 会话 `cwd` 与各仓库 `path` 做路径归一化后**最长前缀匹配**；未匹配归入 `__unmatched__`
     - 计算各项目 `commit_count`/`session_count` 与汇总 `total_*`；`distribution` 按 `(commit_count, session_count)` 降序排序
     - _Requirements: 5.1, 5.2, 5.3_
-  - [ ]* 7.2 为聚合建条目与计数编写属性测试
+  - [x] 7.2 为聚合建条目与计数编写属性测试
     - **Property 10: 聚合为每个项目建条目且计数正确**（Hypothesis）
     - **Validates: Requirements 5.1, 5.2**
-  - [ ]* 7.3 为聚合排序不变式编写属性测试
+  - [x] 7.3 为聚合排序不变式编写属性测试
     - **Property 11: 聚合排序不变式**（Hypothesis）
     - **Validates: Requirements 5.3**
 
@@ -113,23 +113,23 @@
     - 生成中文 Markdown：标题含 `report_identifier` 与起止日期（`YYYY-MM-DD`）；固定章节「时间分布」「本周做了什么（commit）」「我提了什么关键问题（codex）」「数字」
     - 「自动建议（可选，LLM）」章节仅当 `report.llm_suggestions is not None` 时渲染，其余章节始终生成
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
-  - [ ]* 8.2 为渲染包含性编写属性测试
+  - [x] 8.2 为渲染包含性编写属性测试
     - **Property 12: Markdown 渲染包含性**（Hypothesis）
     - **Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5**
-  - [ ]* 8.3 为 LLM 章节条件渲染编写属性测试
+  - [x] 8.3 为 LLM 章节条件渲染编写属性测试
     - **Property 13: LLM 建议章节的条件渲染**（Hypothesis）
     - **Validates: Requirements 6.6, 6.7**
 
-- [ ] 9. 实现 Data_Exporter（`export.py`，跨层数据契约）
+- [x] 9. 实现 Data_Exporter（`export.py`，跨层数据契约）
   - [x] 9.1 实现 `to_dict` / `from_dict` / `export_json`
     - 按 Structured_Export JSON schema 序列化 `AggregatedReport`（`schema_version`、`report_identifier`、起止日期、`distribution`、`repo_commits`、`repo_codex` 仅含 `themes`/`key_questions`、`numbers`、`llm_suggestions`）
     - 写入 `dev_log/data/<Report_Identifier>.json`，目录不存在则创建并返回写入路径
     - `from_dict` 遇损坏/缺字段 JSON 抛 `ExportFormatError`（描述性）
     - _Requirements: 10.1, 10.2, 10.3, 10.5_
-  - [ ]* 9.2 为 JSON 序列化 round-trip 编写属性测试
+  - [x] 9.2 为 JSON 序列化 round-trip 编写属性测试
     - **Property 17: JSON 序列化 round-trip 等价**（Hypothesis）
     - **Validates: Requirements 10.3, 10.4**
-  - [ ]* 9.3 编写 Data_Exporter 单元测试
+  - [x] 9.3 编写 Data_Exporter 单元测试
     - 落地路径（10.1）、目录创建（10.2）、损坏 JSON 报错（10.5）
     - _Requirements: 10.1, 10.2, 10.5_
 
@@ -142,10 +142,10 @@
     - `narrate` 在开启且有凭证时生成主题归纳与下周建议；API key 仅从环境变量 `WEEKLY_SUMMARY_LLM_API_KEY` 读取
     - 调用失败返回 `None` 并记录、继续生成；缺凭证返回缺凭证错误信息并生成无 LLM 章节周报
     - _Requirements: 8.5, 8.6, 9.1, 9.2, 9.3_
-  - [ ]* 11.2 为 LLM 外发摘要边界编写属性测试
+  - [x] 11.2 为 LLM 外发摘要边界编写属性测试
     - **Property 16: LLM 开启时仅外发摘要且不含原始对话**（Hypothesis）——任一 `user_prompt` 原文都不是外发负载的子串
     - **Validates: Requirements 8.5, 8.6**
-  - [ ]* 11.3 编写 LLM_Narrator 单元测试
+  - [x] 11.3 编写 LLM_Narrator 单元测试
     - 调用失败降级（9.2）、缺 API 凭证（9.3）
     - _Requirements: 9.2, 9.3_
 
@@ -153,7 +153,7 @@
   - [x] 12.1 实现 `push_to_feishu`
     - 开启时向自定义机器人 incoming webhook 做一次单向推送；推送失败记录原因且不影响本地 `.md`/`.json` 产出；关闭时不发起任何请求；webhook URL 视为机密（可由环境变量覆盖）
     - _Requirements: 14.1, 14.2, 14.3, 14.4_
-  - [ ]* 12.2 编写 Feishu_Integration 单元测试
+  - [x] 12.2 编写 Feishu_Integration 单元测试
     - 关闭时零调用（14.4）、推送成功/失败/关闭三态下本地产出一致（14.2/14.3）、开启时推送一次（14.1，mock webhook）
     - _Requirements: 14.1, 14.2, 14.3, 14.4_
 
@@ -164,13 +164,13 @@
     - `--push` 且配置含 `push_target` 时，在导出 JSON 后执行 `rsync -az --delete-after dev_log/data/ "$push_target"`（rsync over SSH，复用既有密钥互信）
     - 成功退出码 0（11.2）；不可恢复错误非零退出并打印原因（11.3）
     - _Requirements: 11.1, 11.2, 11.3, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 4.1, 4.2_
-  - [ ]* 13.2 为 LLM 关闭时零外发编写属性测试
+  - [x] 13.2 为 LLM 关闭时零外发编写属性测试
     - **Property 14: LLM 关闭时全流程零外发**（Hypothesis）——`llm.enabled==false` 时跑完整流程，外部网络层记录零次调用
     - **Validates: Requirements 8.1, 8.4**
-  - [ ]* 13.3 编写编排层单元测试
+  - [x] 13.3 编写编排层单元测试
     - 交互式覆盖确认（7.3/7.4）、非交互式跳过（7.5）、打印绝对路径（7.6）、成功退出码（11.2）、不可恢复错误退出码（11.3）
     - _Requirements: 7.3, 7.4, 7.5, 7.6, 11.2, 11.3_
-  - [ ]* 13.4 编写端到端 CLI 集成测试
+  - [x] 13.4 编写端到端 CLI 集成测试
     - 用 fixtures 仓库 + codex 日志跑完整默认流程，断言生成 `.md` 与 `.json`
     - _Requirements: 11.1_
 
@@ -186,10 +186,10 @@
     - `listAvailableWeeks()`：扫描 `DATA_DIR`（默认 `/data`）下 `*.json` 返回 Report_Identifier 列表（每次请求扫描，新增文件无需重建镜像）
     - `loadReport(id)`：读取 `<id>.json`，不存在返回 `null`；仅在服务端读取，只读 JSON 不解析 Markdown
     - _Requirements: 13.1, 13.3, 13.4, 15.2, 15.3_
-  - [ ]* 15.3 为前端 loader 与 CLI 导出契约一致编写属性测试
+  - [x] 15.3 为前端 loader 与 CLI 导出契约一致编写属性测试
     - **Property 18: 前端 loader 与 CLI 导出契约一致**（fast-check）——对合法 Structured_Export，`loadReport` 解析结构与导出结构等价
     - **Validates: Requirements 13.1**
-  - [ ]* 15.4 为 `listAvailableWeeks` 编写 fast-check 属性测试
+  - [x] 15.4 为 `listAvailableWeeks` 编写 fast-check 属性测试
     - 对任意一组 `<id>.json` 文件名集合，`listWeeks` 应恰好返回对应的 Report_Identifier 集合（仅 `*.json`，去除扩展名）
     - _Requirements: 13.3, 15.3_
 
@@ -198,10 +198,10 @@
     - 配置 NextAuth v5 GitHub provider（`clientId`/`clientSecret` 来自环境变量）；`signIn` 回调用 `Allow_List`（环境变量 `ALLOW_LIST`，逗号分隔、小写归一）校验，不在名单返回 `false`
     - 设置 `pages: { signIn: "/login", error: "/unauthorized" }`；`middleware.ts` 保护除 `api/auth`/`login`/`unauthorized` 外的所有路由；OAuth 回调使用 HTTPS、会话 cookie `secure`/`httpOnly`
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 15.4_
-  - [ ]* 16.2 为 Allow_List 校验编写 fast-check 属性测试
+  - [x] 16.2 为 Allow_List 校验编写 fast-check 属性测试
     - **Property 19: Allow_List 校验**（fast-check）——`signIn` 返回 `true` 当且仅当 `login`（不区分大小写）属于名单
     - **Validates: Requirements 12.3**
-  - [ ]* 16.3 编写认证集成测试
+  - [x] 16.3 编写认证集成测试
     - mock OAuth profile：未认证重定向登录入口（12.1）、名单内成功建立会话（12.2）、OAuth 错误/拒绝授权保持未认证（12.4）
     - _Requirements: 12.1, 12.2, 12.4_
 
@@ -214,12 +214,12 @@
     - `app/page.tsx`（仪表盘，默认最新周）、`app/week/[id]/page.tsx`（指定周）、`app/login/page.tsx`（GitHub 登录入口）、`app/unauthorized/page.tsx`（无访问权限提示）
     - 服务端通过 `lib/data.ts` 读取数据并装配组件；请求周无数据展示「该周暂无数据」
     - _Requirements: 13.2, 13.3, 13.4, 12.3, 12.4_
-  - [ ]* 17.3 编写组件 / 快照测试
+  - [x] 17.3 编写组件 / 快照测试
     - 仪表盘渲染四区块（13.2）、多周下周切换入口出现（13.3）、无数据提示（13.4）
     - _Requirements: 13.2, 13.3, 13.4_
 
-- [ ] 18. 实现 Apple 审美样式（Tailwind 视觉层）
-  - [ ] 18.1 依据 Claude Design mockup 落地视觉样式
+- [x] 18. 实现 Apple 审美样式（Tailwind 视觉层）
+  - [x] 18.1 依据 Claude Design mockup 落地视觉样式
     - **依赖外部输入**：本任务需等用户提供 Claude Design 生成的设计稿 mockup 后再实现；在此之前页面/组件以基础样式占位
     - 按 mockup 落地 typography、留白、低调动效与色彩 token，应用到既有页面与组件（Tailwind）
     - _Requirements: 13.2_
@@ -232,11 +232,11 @@
     - `next.config.js` 设 `output: "standalone"`；`Dockerfile` 多阶段构建（deps/build/runner，复制 `.next/standalone`+`.next/static`+`public`，非 root 运行）
     - `docker-compose.yml`：只读挂载 `/data` 数据卷，经环境变量注入 `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`/`AUTH_SECRET`/`ALLOW_LIST`/`AUTH_URL`/`DATA_DIR`
     - _Requirements: 15.1, 15.2, 15.3, 15.4, 12.5_
-  - [ ]* 20.2 编写容器与挂载集成/冒烟测试
+  - [x] 20.2 编写容器与挂载集成/冒烟测试
     - 镜像构建成功、挂载样例数据卷读取（15.2）、运行中新增 JSON 无需重建即可读（15.3）
     - _Requirements: 15.1, 15.2, 15.3_
 
-- [ ] 21. Final checkpoint — 全部测试通过
+- [x] 21. Final checkpoint — 全部测试通过
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
