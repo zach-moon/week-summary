@@ -136,8 +136,8 @@
 - [x] 10. Checkpoint — CLI 数据管线可独立端到端运行
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. 实现 LLM_Narrator（`llm.py`，可选，默认关闭）
-  - [ ] 11.1 实现 `build_llm_input` / `narrate` / `LLMInput`
+- [x] 11. 实现 LLM_Narrator（`llm.py`，可选，默认关闭）
+  - [x] 11.1 实现 `build_llm_input` / `narrate` / `LLMInput`
     - `build_llm_input` 仅构造摘要要点（`project_names`、`topic_keywords`、`commit_subjects`），从类型层面排除原始 transcript
     - `narrate` 在开启且有凭证时生成主题归纳与下周建议；API key 仅从环境变量 `WEEKLY_SUMMARY_LLM_API_KEY` 读取
     - 调用失败返回 `None` 并记录、继续生成；缺凭证返回缺凭证错误信息并生成无 LLM 章节周报
@@ -149,16 +149,16 @@
     - 调用失败降级（9.2）、缺 API 凭证（9.3）
     - _Requirements: 9.2, 9.3_
 
-- [ ] 12. 实现 Feishu_Integration（`feishu.py`，可选）
-  - [ ] 12.1 实现 `push_to_feishu`
+- [x] 12. 实现 Feishu_Integration（`feishu.py`，可选）
+  - [x] 12.1 实现 `push_to_feishu`
     - 开启时向自定义机器人 incoming webhook 做一次单向推送；推送失败记录原因且不影响本地 `.md`/`.json` 产出；关闭时不发起任何请求；webhook URL 视为机密（可由环境变量覆盖）
     - _Requirements: 14.1, 14.2, 14.3, 14.4_
   - [ ]* 12.2 编写 Feishu_Integration 单元测试
     - 关闭时零调用（14.4）、推送成功/失败/关闭三态下本地产出一致（14.2/14.3）、开启时推送一次（14.1，mock webhook）
     - _Requirements: 14.1, 14.2, 14.3, 14.4_
 
-- [ ] 13. 实现 summarize.py（编排层 / CLI 入口）
-  - [ ] 13.1 实现 `main` 与端到端编排
+- [x] 13. 实现 summarize.py（编排层 / CLI 入口）
+  - [x] 13.1 实现 `main` 与端到端编排
     - 解析 CLI 参数 `--config`/`--week`/`--output-dir`/`--push`/`--yes`；按默认流程接线：`load_config` → 时间窗 → `collect_commits`+`collect_sessions` → `aggregate` →（可选 `narrate`）→ `render_markdown` → 写 `dev_log/<id>.md` →（可选 `export_json`）→（可选 `push_to_feishu`）
     - 覆盖逻辑：不存在直接写（7.4）；交互式（`isatty`）展示确认（7.3）；非交互式跳过覆盖并提示（7.5）；写入后打印绝对路径（7.6）；输出目录不存在则创建（7.2）；写入 `dev_log/<Report_Identifier>.md`（7.1）
     - `--push` 且配置含 `push_target` 时，在导出 JSON 后执行 `rsync -az --delete-after dev_log/data/ "$push_target"`（rsync over SSH，复用既有密钥互信）
@@ -174,7 +174,7 @@
     - 用 fixtures 仓库 + codex 日志跑完整默认流程，断言生成 `.md` 与 `.json`
     - _Requirements: 11.1_
 
-- [ ] 14. Checkpoint — CLI 全流程（含可选能力与编排）测试通过
+- [x] 14. Checkpoint — CLI 全流程（含可选能力与编排）测试通过
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 15. 搭建前端脚手架与数据契约（types 优先，保持与 export.py 同步）
