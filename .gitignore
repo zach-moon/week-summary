@@ -9,3 +9,12 @@ venv/
 
 # 周报输出（本地归档与结构化导出）
 dev_log/
+
+# 前端依赖与构建产物
+node_modules/
+.next/
+*.tsbuildinfo
+
+# 系统 / 打包杂项
+.DS_Store
+*.zip
