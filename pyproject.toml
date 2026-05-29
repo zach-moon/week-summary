@@ -1,0 +1,18 @@
+[project]
+name = "weekly-summary"
+version = "0.1.0"
+description = "开发周报自动生成工具（Weekly_Summary_CLI）"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+# 让测试以 `from weekly_summary.xxx import ...` 形式导入位于 tools/ 下的包。
+pythonpath = ["tools"]
+testpaths = ["tools/weekly_summary/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra"
+
+[tool.hypothesis]
+# 属性测试约定：每个属性测试至少运行 100 次随机迭代。
+# 具体 profile 在 tests/conftest.py 中注册并选用。

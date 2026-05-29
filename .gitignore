@@ -1,1 +1,11 @@
-/.kiro
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+.venv/
+venv/
+*.egg-info/
+
+# 周报输出（本地归档与结构化导出）
+dev_log/

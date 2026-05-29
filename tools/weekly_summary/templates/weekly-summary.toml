@@ -1,0 +1,31 @@
+# ~/.config/weekly-summary.toml
+
+# 要扫描的 Git 仓库绝对路径列表
+repos = [
+    "/Users/me/Projects/project-a",
+    "/Users/me/Projects/project-b",
+]
+
+# 周报输出目录（Markdown 与 data/ 均落于此）
+output_dir = "dev_log"
+
+# 仅采集该作者的提交；留空或省略表示不过滤
+author = "me@example.com"
+
+# 是否导出结构化 JSON（供前端消费）
+export_enabled = true
+
+# 数据交接：rsync over SSH 的远端目标（默认同步机制，配合 `--push`）
+# 留空表示不推送；仅同步 dev_log/data/ 下的摘要 JSON
+push_target = "user@server:/srv/weekly/data/"
+
+[llm]
+enabled = false            # 默认关闭（隐私优先）
+provider = "openai"
+model = "gpt-4o-mini"
+# API key 通过环境变量提供：WEEKLY_SUMMARY_LLM_API_KEY
+
+[feishu]
+enabled = false
+# webhook_url 建议通过环境变量 WEEKLY_SUMMARY_FEISHU_WEBHOOK 提供（视为机密）
+webhook_url = ""

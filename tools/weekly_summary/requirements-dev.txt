@@ -1,0 +1,9 @@
+# Weekly_Summary_CLI 开发 / 测试依赖
+#
+# 运行时（runtime）依赖：
+#   - 仅使用 Python 3.11+ 标准库（tomllib、json、subprocess、pathlib、datetime 等），
+#     因此本工具无第三方运行时依赖。
+#
+# 测试（test）依赖：
+pytest>=8.0
+hypothesis>=6.100
