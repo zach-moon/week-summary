@@ -120,9 +120,15 @@ def _parse_session_file(
     - 解析失败 → ``(None, CollectorWarning)``（Req 3.5）
     """
     try:
-        raw_lines = path.read_text(encoding="utf-8").splitlines()
+        text = path.read_text(encoding="utf-8")
     except OSError as exc:
         return None, CollectorWarning(source=str(path), message=f"无法读取会话文件：{exc}")
+
+    # JSONL 严格以 ``\n`` 分隔记录；只按标准换行切分，避免 ``str.splitlines()``
+    # 误把 JSON 字符串里出现的 Unicode 行边界字符（U+0085 NEL、U+2028、U+2029、
+    # 换页符等）当作记录分隔，从而把单条 JSON 记录错误拆成两行（导致
+    # "Unterminated string" 解析失败与虚假告警）。同时兼容 ``\r\n``（去尾部 \r）。
+    raw_lines = [line[:-1] if line.endswith("\r") else line for line in text.split("\n")]
 
     project_dir: str | None = None
     session_dt: datetime | None = None
