@@ -1,71 +1,72 @@
+"use client";
+
 // frontend/components/TimeDistribution.tsx
 //
-// 时间分布（按项目目录聚合）——展示每个项目的 commit 数与会话数，并用一条
-// 与「该项目活动量 / 最大活动量」成比例的简单条形可视化（Req 13.2）。
+// 精力分布（DistributionBand）——展示每个项目的 commit 数与会话数，并用占比条可视化
+// （Req 13.2）。依据 Claude Design mockup 落地（任务 18.1）：eyebrow「精力分布」+
+// band-title + .dist 行（.pbar 占比条）。
 //
-// 数据由 CLI 侧导出时已按 (commit_count, session_count) 降序排列（Req 5.3），
-// 这里不再二次排序，直接按给定顺序渲染。
+// 占比条宽度 = commit_count / max(commit_count)；commit_count==0 && session_count==0
+// 的行标记为 .idle（弱化样式），与 mockup 一致。
 //
-// 这是 Server Component（无交互）。样式仅用基础 Tailwind 维持可读结构，
-// 最终 Apple 审美样式在任务 18.1 落地。
+// 数据由 CLI 侧导出时已按 (commit_count, session_count) 降序排列（Req 5.3），按序渲染。
+//
+// 客户端组件：使用 useInView 触发占比条进入视区后的展开动画。
 
 import type { ProjectDistribution } from "@/lib/types";
 
 import { projectLabel } from "./format";
+import { ProportionBar, Reveal, useInView } from "./motion";
 
 interface TimeDistributionProps {
   distribution: ProjectDistribution[];
 }
 
-/** 单个项目的「活动量」= commit 数 + 会话数，用于条形长度归一化。 */
-function activity(entry: ProjectDistribution): number {
-  return entry.commit_count + entry.session_count;
-}
-
 export function TimeDistribution({ distribution }: TimeDistributionProps) {
-  // 以最大活动量为分母做比例归一化；全为 0 时避免除零。
-  const maxActivity = distribution.reduce(
-    (max, entry) => Math.max(max, activity(entry)),
-    0,
+  const [ref, inView] = useInView<HTMLElement>({ threshold: 0.2 });
+
+  // 占比条以「最大 commit 数」为分母（与 mockup 一致），避免除零。
+  const max = Math.max(
+    1,
+    ...distribution.map((d) => d.commit_count),
   );
 
   return (
-    <section data-component="time-distribution" className="space-y-4">
-      <h2 className="text-lg font-semibold">时间分布</h2>
+    <section className="band band-alt" ref={ref} data-component="time-distribution">
+      <div className="wrap">
+        <Reveal as="p" className="eyebrow">
+          精力分布
+        </Reveal>
+        <Reveal as="h2" className="band-title">
+          这一周，时间花在了哪里
+        </Reveal>
 
-      {distribution.length === 0 ? (
-        <p className="text-sm text-gray-500">本周暂无项目活动。</p>
-      ) : (
-        <ul className="space-y-3">
-          {distribution.map((entry) => {
-            const ratio =
-              maxActivity > 0 ? activity(entry) / maxActivity : 0;
-            const widthPct = Math.round(ratio * 100);
-            return (
-              <li
-                key={entry.project_dir}
-                data-project={entry.project_dir}
-                className="space-y-1"
-              >
-                <div className="flex items-baseline justify-between gap-4 text-sm">
-                  <span className="font-medium">{projectLabel(entry)}</span>
-                  <span className="text-gray-500">
-                    {entry.commit_count} commits · {entry.session_count} sessions
+        {distribution.length === 0 ? (
+          <p className="empty-sub">本周暂无项目活动。</p>
+        ) : (
+          <div className="dist">
+            {distribution.map((d, i) => {
+              const pct = (d.commit_count / max) * 100;
+              const idle = d.commit_count === 0 && d.session_count === 0;
+              return (
+                <div
+                  className={"dist-row " + (idle ? "idle" : "")}
+                  key={d.project_dir}
+                  data-project={d.project_dir}
+                >
+                  <span className="dist-name">{projectLabel(d)}</span>
+                  <ProportionBar pct={pct} shown={inView} delay={120 + i * 70} />
+                  <span className="dist-meta">
+                    <b>{d.commit_count}</b> commit
+                    <span className="dist-sep">·</span>
+                    <b>{d.session_count}</b> 会话
                   </span>
                 </div>
-                {/* 比例条：宽度反映相对活动量。仅作结构占位，样式后续可替换。 */}
-                <div className="h-2 w-full rounded bg-gray-100">
-                  <div
-                    className="h-2 rounded bg-gray-400"
-                    style={{ width: `${widthPct}%` }}
-                    aria-hidden="true"
-                  />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

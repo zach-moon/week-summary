@@ -17,7 +17,7 @@
 // 前缀），且会话 cookie 始终为 httpOnly。因此生产部署设置 AUTH_URL=https://...
 // 即可满足 Req 12.5（HTTPS 回调 + secure/httpOnly cookie）。
 
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import GitHub from "next-auth/providers/github";
 
 /**
@@ -50,7 +50,15 @@ export function isAllowed(
 
 const allowList = parseAllowList(process.env.ALLOW_LIST);
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+/**
+ * Auth.js (NextAuth v5) 配置对象。
+ *
+ * 抽出为具名导出（而非内联进 `NextAuth(...)`），以便认证集成测试（task 16.3）
+ * 能在隔离环境下直接调用真实的 `signIn` 回调，验证 Allow_List 校验 / OAuth
+ * 拒绝场景（Req 12.2 / 12.4），无需启动 Next.js 运行时或发起真实 GitHub 网络请求。
+ * 运行时行为与此前内联写法完全等价。
+ */
+export const authConfig = {
   providers: [
     GitHub({
       // 凭证仅来自环境变量（Req 15.4）。
@@ -71,4 +79,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login", // 未认证 -> 重定向到登录入口（Req 12.1）
     error: "/unauthorized", // 拒绝 / OAuth 错误 -> 提示页（Req 12.3 / 12.4）
   },
-});
+} satisfies NextAuthConfig;
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

@@ -1,16 +1,22 @@
+"use client";
+
 // frontend/components/WeekSwitcher.tsx
 //
 // 周切换器（week switcher）——存在多周数据时提供按周切换入口（Req 13.3）。
-// 由调用方传入 `weeks`（来自 lib/data.ts 的 listAvailableWeeks，已按降序排列）
-// 与 `current`（当前展示的 Report_Identifier）。
+// 依据 Claude Design mockup 的 .wsw 落地（任务 18.1）：上一周 / 下一周 chevron +
+// 中心标签（mono report_identifier）+ 下拉菜单列出全部周次，高亮当前周。
 //
-// 纯展示组件：渲染指向 /week/[id] 的链接列表，高亮当前周。
-// 简单链接列表无需客户端交互，保持为 Server Component（若日后改用下拉/select
-// 需要交互，再标注 "use client"）。
+// 外部 props 契约保持不变：`weeks: string[]`（来自 listAvailableWeeks，已降序排列，
+// 最新周在前）与 `current: string`（当前展示的 Report_Identifier）。导航经 next/link
+// 跳转 /week/[id]。mockup 中的日期范围与数据点需要更多字段（page 未提供），
+// 这里以 id + 当前高亮呈现，保持在 prop 契约内。
 //
-// 基础 Tailwind 结构，最终样式在任务 18.1 落地。
+// 客户端组件：含下拉开合状态与点击外部关闭逻辑。
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+import { Caret, Chevron } from "./motion";
 
 interface WeekSwitcherProps {
   weeks: string[];
@@ -18,35 +24,86 @@ interface WeekSwitcherProps {
 }
 
 export function WeekSwitcher({ weeks, current }: WeekSwitcherProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   if (weeks.length === 0) {
     return null;
   }
 
+  // weeks 降序（最新在前）：index 越小越新。
+  const index = weeks.indexOf(current);
+  // 「下一周」= 更新的一周（index-1）；「上一周」= 更早的一周（index+1）。
+  const newer = index > 0 ? weeks[index - 1] : null;
+  const older = index >= 0 && index < weeks.length - 1 ? weeks[index + 1] : null;
+
   return (
-    <nav data-component="week-switcher" aria-label="周切换" className="space-y-2">
-      <span className="text-sm font-medium text-gray-700">切换周次</span>
-      <ul className="flex flex-wrap gap-2">
-        {weeks.map((week) => {
-          const isCurrent = week === current;
-          return (
-            <li key={week}>
+    <div className="wsw" ref={ref} data-component="week-switcher" aria-label="周切换">
+      {older ? (
+        <Link className="wsw-nav" href={`/week/${older}`} aria-label="上一周">
+          <Chevron dir="left" />
+        </Link>
+      ) : (
+        <span className="wsw-nav disabled" aria-hidden="true">
+          <Chevron dir="left" />
+        </span>
+      )}
+
+      <button
+        type="button"
+        className="wsw-label"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        <span className="wsw-id">{current}</span>
+        <span className={"wsw-caret " + (open ? "up" : "")}>
+          <Caret />
+        </span>
+      </button>
+
+      {newer ? (
+        <Link className="wsw-nav" href={`/week/${newer}`} aria-label="下一周">
+          <Chevron dir="right" />
+        </Link>
+      ) : (
+        <span className="wsw-nav disabled" aria-hidden="true">
+          <Chevron dir="right" />
+        </span>
+      )}
+
+      {open && (
+        <div className="wsw-menu" role="menu">
+          {weeks.map((week) => {
+            const isCurrent = week === current;
+            return (
               <Link
+                key={week}
                 href={`/week/${week}`}
+                role="menuitem"
                 data-week={week}
                 aria-current={isCurrent ? "page" : undefined}
-                className={
-                  isCurrent
-                    ? "rounded-full bg-gray-900 px-3 py-1 text-sm font-medium text-white"
-                    : "rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
-                }
+                className={"wsw-item " + (isCurrent ? "on" : "")}
+                onClick={() => setOpen(false)}
               >
-                {week}
+                <span className="wsw-item-id">{week}</span>
+                <span className="wsw-item-dot" />
               </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 

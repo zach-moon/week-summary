@@ -21,3 +21,18 @@ export function projectLabel(
   if (entry.project_dir === UNMATCHED_DIR) return UNMATCHED_LABEL;
   return entry.project_name?.trim() || entry.project_dir;
 }
+
+
+/**
+ * 周日期范围展示：把 "YYYY-MM-DD" 起止裁成 "MM-DD ~ MM-DD"
+ * （与 mockup 的 fmtRange 一致）。
+ */
+export function formatRange(start: string, end: string): string {
+  const md = (d: string) => (d.length >= 5 ? d.slice(5) : d);
+  return `${md(start)} ~ ${md(end)}`;
+}
+
+/** commit 日期短格式：把 "YYYY-MM-DD" 裁成 "MM-DD"。 */
+export function shortDate(date: string): string {
+  return date.length >= 5 ? date.slice(5) : date;
+}

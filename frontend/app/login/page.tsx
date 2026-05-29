@@ -5,10 +5,13 @@
 // 通过 server action 调用 signIn("github") 触发 GitHub OAuth 2.0 授权码流程。
 // 若用户已认证则直接重定向到仪表盘 "/"，避免已登录用户停留在登录页。
 //
-// Server Component；基础 Tailwind 结构，最终 Apple 审美样式在任务 18.1 落地。
+// 视觉：依据 Claude Design mockup 落地（任务 18.1）的影院级 LoginView（深空 + 写实
+// 半月）。LoginView 为客户端视觉外壳，承载 signIn 的 server action 表单作为其 CTA
+// children 传入——认证接线（signIn("github")）保持不变，仅外观更新。
 
 import { redirect } from "next/navigation";
 
+import { GitHubMark, LoginView } from "@/components";
 import { auth, signIn } from "@/lib/auth";
 
 export default async function LoginPage() {
@@ -19,27 +22,19 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center gap-6 px-6 text-center">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">开发周报</h1>
-        <p className="text-sm text-gray-500">
-          请使用 GitHub 账户登录以查看开发周报。
-        </p>
-      </div>
-
+    <LoginView>
       <form
+        className="login-cta-form"
         action={async () => {
           "use server";
           await signIn("github", { redirectTo: "/" });
         }}
       >
-        <button
-          type="submit"
-          className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-gray-700"
-        >
+        <button type="submit" className="btn-gh">
+          <GitHubMark size={20} />
           使用 GitHub 登录
         </button>
       </form>
-    </main>
+    </LoginView>
   );
 }

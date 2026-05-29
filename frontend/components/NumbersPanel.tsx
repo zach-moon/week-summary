@@ -1,43 +1,33 @@
 // frontend/components/NumbersPanel.tsx
 //
-// 数字——展示三项汇总数字：commit 总数、Codex 会话总数、提问（User_Prompt）总数
-// （Req 13.2）。消费 StructuredExport["numbers"]。
+// 数字（HeroBand stats）——展示三项汇总大数字：提交 commit / Codex 会话 / 提问总数
+// （Req 13.2）。依据 Claude Design mockup 落地（任务 18.1）：.stats 三栏，每项一个
+// 巨大的 .stat-v 数字 + .stat-l 标签，数字带进入视区计数动画（StatNumber，客户端）。
 //
-// Server Component；基础 Tailwind 结构，最终样式在任务 18.1 落地。
+// 消费 StructuredExport["numbers"]。本组件渲染 .stats 网格，由 Dashboard 的 HeroBand
+// 包裹（kicker + headline + 月球背景）。
+//
+// 作为 Server Component 渲染（StatNumber 自身为客户端组件，负责计数动画）。
 
 import type { StructuredExport } from "@/lib/types";
+
+import { StatNumber } from "./motion";
 
 interface NumbersPanelProps {
   numbers: StructuredExport["numbers"];
 }
 
-/** 三项统计的展示配置：键、中文标签。 */
-const STATS: { key: keyof StructuredExport["numbers"]; label: string }[] = [
-  { key: "total_commits", label: "commit 总数" },
-  { key: "total_sessions", label: "Codex 会话总数" },
-  { key: "total_user_prompts", label: "提问总数" },
-];
-
 export function NumbersPanel({ numbers }: NumbersPanelProps) {
   return (
-    <section data-component="numbers-panel" className="space-y-4">
-      <h2 className="text-lg font-semibold">数字</h2>
-
-      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {STATS.map((stat) => (
-          <div
-            key={stat.key}
-            data-stat={stat.key}
-            className="space-y-1 rounded-lg bg-gray-50 p-4"
-          >
-            <dt className="text-sm text-gray-500">{stat.label}</dt>
-            <dd className="text-3xl font-semibold tabular-nums">
-              {numbers[stat.key]}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
+    <div className="stats" data-component="numbers-panel">
+      <StatNumber value={numbers.total_commits} label="提交 commit" delay={120} />
+      <StatNumber value={numbers.total_sessions} label="Codex 会话" delay={220} />
+      <StatNumber
+        value={numbers.total_user_prompts}
+        label="提问总数"
+        delay={320}
+      />
+    </div>
   );
 }
 
