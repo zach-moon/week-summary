@@ -1,0 +1,29 @@
+# Weekly Dev Report — SERVER tier 容器编排（Req 15）
+#
+# 说明：
+# - 容器本身仅监听 HTTP:3000；对外的 HTTPS 由前置反向代理（Nginx/Caddy）终止 TLS（Req 12.5）。
+#   OAuth 回调基址 AUTH_URL 应配置为 https://<your-domain>。
+# - 所有 secrets（OAuth client id/secret、AUTH_SECRET、ALLOW_LIST 等）经环境变量从宿主机注入，
+#   绝不写入镜像或提交进仓库（Req 15.4）。
+# - 数据卷以只读（:ro）方式挂载，容器不写数据；新增/更新 JSON 无需重建镜像即可被读取（Req 15.2/15.3）。
+
+services:
+  weekly-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: weekly-dev-report-frontend
+    ports:
+      - "3000:3000"            # 经反向代理终止 TLS 后对外提供 HTTPS（Req 12.5）
+    environment:
+      - DATA_DIR=/data                            # 只读数据卷挂载点（Req 15.2/15.3）
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}      # GitHub OAuth client id（secret，env 注入）
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}  # GitHub OAuth client secret（secret，env 注入）
+      - AUTH_SECRET=${AUTH_SECRET}                # Auth.js 会话加密密钥（secret，env 注入）
+      - ALLOW_LIST=${ALLOW_LIST}                  # 逗号分隔的 GitHub login 白名单
+      - AUTH_URL=${AUTH_URL}                      # OAuth 回调基址，应为 https://<your-domain>
+    volumes:
+      # HANDOFF 同步目标目录 -> 容器 /data，只读挂载（Req 15.2/15.3）。
+      # 宿主路径可经 ${WEEKLY_DATA_DIR} 覆盖，默认 /srv/weekly/data。
+      - "${WEEKLY_DATA_DIR:-/srv/weekly/data}:/data:ro"
+    restart: unless-stopped

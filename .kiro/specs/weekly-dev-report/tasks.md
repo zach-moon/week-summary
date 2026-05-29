@@ -177,12 +177,12 @@
 - [x] 14. Checkpoint — CLI 全流程（含可选能力与编排）测试通过
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 15. 搭建前端脚手架与数据契约（types 优先，保持与 export.py 同步）
-  - [ ] 15.1 创建 `frontend/` Next.js + Tailwind 脚手架与 `lib/types.ts`
+- [x] 15. 搭建前端脚手架与数据契约（types 优先，保持与 export.py 同步）
+  - [x] 15.1 创建 `frontend/` Next.js + Tailwind 脚手架与 `lib/types.ts`
     - 初始化 App Router 工程（`package.json`、`tsconfig`、Tailwind 配置、`app/layout.tsx`）
     - 在 `lib/types.ts` 中定义 `StructuredExport`、`ProjectDistribution`、`RepoCommitGroup`、`RepoCodexGroup`，字段名与类型逐一镜像 `export.py` 的 JSON 契约
     - _Requirements: 13.1, 10.3_
-  - [ ] 15.2 实现 `lib/data.ts`
+  - [x] 15.2 实现 `lib/data.ts`
     - `listAvailableWeeks()`：扫描 `DATA_DIR`（默认 `/data`）下 `*.json` 返回 Report_Identifier 列表（每次请求扫描，新增文件无需重建镜像）
     - `loadReport(id)`：读取 `<id>.json`，不存在返回 `null`；仅在服务端读取，只读 JSON 不解析 Markdown
     - _Requirements: 13.1, 13.3, 13.4, 15.2, 15.3_
@@ -193,8 +193,8 @@
     - 对任意一组 `<id>.json` 文件名集合，`listWeeks` 应恰好返回对应的 Report_Identifier 集合（仅 `*.json`，去除扩展名）
     - _Requirements: 13.3, 15.3_
 
-- [ ] 16. 实现前端认证 Auth_Service（GitHub OAuth + Allow_List）
-  - [ ] 16.1 实现 `lib/auth.ts`、`app/api/auth/[...nextauth]/route.ts` 与 `middleware.ts`
+- [x] 16. 实现前端认证 Auth_Service（GitHub OAuth + Allow_List）
+  - [x] 16.1 实现 `lib/auth.ts`、`app/api/auth/[...nextauth]/route.ts` 与 `middleware.ts`
     - 配置 NextAuth v5 GitHub provider（`clientId`/`clientSecret` 来自环境变量）；`signIn` 回调用 `Allow_List`（环境变量 `ALLOW_LIST`，逗号分隔、小写归一）校验，不在名单返回 `false`
     - 设置 `pages: { signIn: "/login", error: "/unauthorized" }`；`middleware.ts` 保护除 `api/auth`/`login`/`unauthorized` 外的所有路由；OAuth 回调使用 HTTPS、会话 cookie `secure`/`httpOnly`
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 15.4_
@@ -205,12 +205,12 @@
     - mock OAuth profile：未认证重定向登录入口（12.1）、名单内成功建立会话（12.2）、OAuth 错误/拒绝授权保持未认证（12.4）
     - _Requirements: 12.1, 12.2, 12.4_
 
-- [ ] 17. 实现前端页面与展示组件
-  - [ ] 17.1 实现展示组件
+- [x] 17. 实现前端页面与展示组件
+  - [x] 17.1 实现展示组件
     - 组件：时间分布、commit 列表、codex 关键问题、汇总数字、周切换器（week switcher）、无数据空态
     - 组件消费 `lib/types.ts` 的 `StructuredExport`
     - _Requirements: 13.2, 13.3, 13.4_
-  - [ ] 17.2 实现页面路由
+  - [x] 17.2 实现页面路由
     - `app/page.tsx`（仪表盘，默认最新周）、`app/week/[id]/page.tsx`（指定周）、`app/login/page.tsx`（GitHub 登录入口）、`app/unauthorized/page.tsx`（无访问权限提示）
     - 服务端通过 `lib/data.ts` 读取数据并装配组件；请求周无数据展示「该周暂无数据」
     - _Requirements: 13.2, 13.3, 13.4, 12.3, 12.4_
@@ -224,11 +224,11 @@
     - 按 mockup 落地 typography、留白、低调动效与色彩 token，应用到既有页面与组件（Tailwind）
     - _Requirements: 13.2_
 
-- [ ] 19. Checkpoint — 前端测试通过
+- [x] 19. Checkpoint — 前端测试通过
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 20. 前端容器化打包
-  - [ ] 20.1 实现 `next.config.js`、`Dockerfile` 与 `docker-compose.yml`
+- [x] 20. 前端容器化打包
+  - [x] 20.1 实现 `next.config.js`、`Dockerfile` 与 `docker-compose.yml`
     - `next.config.js` 设 `output: "standalone"`；`Dockerfile` 多阶段构建（deps/build/runner，复制 `.next/standalone`+`.next/static`+`public`，非 root 运行）
     - `docker-compose.yml`：只读挂载 `/data` 数据卷，经环境变量注入 `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`/`AUTH_SECRET`/`ALLOW_LIST`/`AUTH_URL`/`DATA_DIR`
     - _Requirements: 15.1, 15.2, 15.3, 15.4, 12.5_

@@ -1,0 +1,3 @@
+# 占位文件：确保 frontend/public/ 目录存在，
+# 以便 Dockerfile 的 `COPY --from=builder /app/public ./public` 不会因缺失目录而失败。
+# 当后续新增静态资源（favicon、图片等）后可移除本文件。
